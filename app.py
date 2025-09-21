@@ -6,11 +6,6 @@ st.set_page_config(page_title="PromptLab", layout="wide")
 # Streamlit app layout
 st.title('PromptLab')
 
-# Create two columns for the Shinobi and Raikage buttons
-col1, col2 = st.columns(2)
-
-mode = st.radio("Choose a mode:", ["Proficient Level", "Apex Level"], horizontal=True)
-
 # Retrieve the API key from Streamlit secrets
 GOOGLE_API_KEY = st.secrets["GEMINI_API_KEY"]
 
@@ -20,11 +15,10 @@ genai.configure(api_key=GOOGLE_API_KEY)
 # Input field for the blog topic
 topic = st.text_area('Enter your prompt:')
 
-# Display selected mode
-st.write(f"You selected: {mode}")
+# Display mode buttons side-by-side
+col1, col2 = st.columns(2)
 
-
-# Shinobi and Raikage templates
+# Templates for each mode
 Proficient_TEMPLATE = """
 Analyze the following user prompt and transform it into an enhanced, structured prompt following these steps:
 
@@ -74,25 +68,33 @@ Enhance the following prompt using this **structured, expert-level framework:**
 **Enhanced Prompt:**  
 (Apply the Mastermind framework to generate the improved version)    
 """
-if st.button("Generate Enhanced Prompt"):
-    if topic.strip():
-        with st.spinner("Enhancing your prompt..."):
-            # Choose the template based on the selected mode
-            if mode == "Shinobi":
+
+# The output area
+if topic.strip():
+    with col1:
+        if st.button("Proficient Level (Shinobi)"):
+            with st.spinner("Enhancing your prompt (Proficient Level)..."):
                 prompt = Proficient_TEMPLATE.format(user_prompt=topic)
-            else:
+                try:
+                    model = genai.GenerativeModel('gemini-2.0-flash')
+                    response = model.generate_content(prompt)
+                    enhanced_prompt = response.text
+                    st.subheader("🔹 Enhanced Prompt (Proficient Level):")
+                    st.write(enhanced_prompt)
+                except Exception as e:
+                    st.error(f"❌ Error generating enhanced prompt: {e}")
+    with col2:
+        if st.button("Apex Level (Raikage)"):
+            with st.spinner("Enhancing your prompt (Apex Level)..."):
                 prompt = Apex_TEMPLATE.format(user_prompt=topic)
+                try:
+                    model = genai.GenerativeModel('gemini-2.0-flash')
+                    response = model.generate_content(prompt)
+                    enhanced_prompt = response.text
+                    st.subheader("🔹 Enhanced Prompt (Apex Level):")
+                    st.write(enhanced_prompt)
+                except Exception as e:
+                    st.error(f"❌ Error generating enhanced prompt: {e}")
+else:
+    st.info("Please enter a prompt above to enable the enhancement buttons.")
 
-            # Initialize the generative model
-            model = genai.GenerativeModel('gemini-2.0-flash')
-
-            # Generate enhanced prompt
-            try:
-                response = model.generate_content(prompt)
-                enhanced_prompt = response.text  # Extract the response text
-                st.subheader("🔹 Enhanced Prompt:")
-                st.write(enhanced_prompt)  
-            except Exception as e:
-                st.error(f"❌ Error generating enhanced prompt: {e}")
-    else:
-        st.warning("⚠️ Please enter a prompt before generating.")
