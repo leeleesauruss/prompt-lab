@@ -7,7 +7,7 @@ st.set_page_config(page_title="PromptLab", layout="wide")
 st.title('PromptLab')
 
 # Retrieve the API key from Streamlit secrets
-GOOGLE_API_KEY = st.secrets["AIzaSyDoNRjwGMrAZkQax8lrz4wYi8AYW0wFrY8"]
+GOOGLE_API_KEY = st.secrets[AIzaSyDoNRjwGMrAZkQax8lrz4wYi8AYW0wFrY8]
 
 # Configure the Google Generative AI API with your API key
 genai.configure(api_key=GAIzaSyDoNRjwGMrAZkQax8lrz4wYi8AYW0wFrY8)
@@ -97,5 +97,6 @@ if topic.strip():
                     st.error(f"❌ Error generating enhanced prompt: {e}")
 else:
     st.info("Please enter a prompt above to enable the enhancement buttons.")
+
 
 
